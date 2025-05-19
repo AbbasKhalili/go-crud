@@ -1,5 +1,16 @@
 basePath: /
 definitions:
+  Dtos.ErrorResponseDto:
+    properties:
+      error:
+        type: string
+    type: object
+  Dtos.GenericResponseDto:
+    properties:
+      data: {}
+      message:
+        type: string
+    type: object
   models.Product:
     properties:
       categoryId:
@@ -19,46 +30,20 @@ info:
   version: "1.0"
 paths:
   /products:
-    delete:
-      consumes:
-      - application/json
-      description: add by json product
-      parameters:
-      - description: Delete product
-        in: body
-        name: product
-        required: true
-        schema:
-          $ref: '#/definitions/models.Product'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Product'
-      summary: Delete a product
-      tags:
-      - products
     get:
       consumes:
       - application/json
       description: add by json product
-      parameters:
-      - description: Get a product
-        in: body
-        name: product
-        required: true
-        schema:
-          $ref: '#/definitions/models.Product'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Product'
-      summary: Get a product
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+      summary: Get all product
       tags:
       - products
     post:
@@ -82,11 +67,61 @@ paths:
       summary: Create a product
       tags:
       - products
+  /products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: add by json product
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Dtos.GenericResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Dtos.ErrorResponseDto'
+      summary: Delete a product
+      tags:
+      - products
+    get:
+      consumes:
+      - application/json
+      description: add by json product
+      parameters:
+      - description: Product Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Product'
+      summary: Get a product
+      tags:
+      - products
     put:
       consumes:
       - application/json
       description: add by json product
       parameters:
+      - description: Product Id
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: Update product
         in: body
         name: product
