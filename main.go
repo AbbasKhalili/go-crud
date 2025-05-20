@@ -1,5 +1,5 @@
 // @title        Product API
-// @version      1.0
+// @version      0.1.0
 // @description  REST API for managing products
 // @host         localhost:8080
 // @BasePath     /
