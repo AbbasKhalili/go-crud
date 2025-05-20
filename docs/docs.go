@@ -32,10 +32,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Product"
-                            }
+                            "$ref": "#/definitions/Dtos.GenericResponseDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Dtos.ErrorResponseDto"
                         }
                     }
                 }
@@ -67,7 +70,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Product"
+                            "$ref": "#/definitions/Dtos.GenericResponseDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Dtos.ErrorResponseDto"
                         }
                     }
                 }
@@ -99,7 +108,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Product"
+                            "$ref": "#/definitions/Dtos.GenericResponseDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Dtos.ErrorResponseDto"
                         }
                     }
                 }
@@ -138,7 +153,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Product"
+                            "$ref": "#/definitions/Dtos.GenericResponseDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/Dtos.ErrorResponseDto"
                         }
                     }
                 }

@@ -40,9 +40,11 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Product'
-            type: array
+            $ref: '#/definitions/Dtos.GenericResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Dtos.ErrorResponseDto'
       summary: Get all product
       tags:
       - products
@@ -63,7 +65,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Product'
+            $ref: '#/definitions/Dtos.GenericResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Dtos.ErrorResponseDto'
       summary: Create a product
       tags:
       - products
@@ -108,7 +114,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Product'
+            $ref: '#/definitions/Dtos.GenericResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Dtos.ErrorResponseDto'
       summary: Get a product
       tags:
       - products
@@ -134,7 +144,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Product'
+            $ref: '#/definitions/Dtos.GenericResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Dtos.ErrorResponseDto'
       summary: Update a product
       tags:
       - products

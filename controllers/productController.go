@@ -2,13 +2,21 @@ package controllers
 
 import (
 	"go-crud/Dtos"
-	"go-crud/config"
 	"go-crud/models"
+	"go-crud/services"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
+
+type ProductController struct {
+	service services.ProductService
+}
+
+func NewProductController(s services.ProductService) *ProductController {
+	return &ProductController{service: s}
+}
 
 // GetProducts godoc
 // @Summary      Get all product
@@ -16,11 +24,15 @@ import (
 // @Tags         products
 // @Accept       json
 // @Produce      json
-// @Success      200  {object} []models.Product
+// @Success      200 {object} Dtos.GenericResponseDto
+// @Failure		 400 {object} Dtos.ErrorResponseDto
 // @Router       /products [get]
-func GetProducts(c *gin.Context) {
-	var products []models.Product
-	config.DB.Find(&products)
+func (pc *ProductController) GetProducts(c *gin.Context) {
+	products, err := pc.service.GetAllProduct()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, Dtos.ErrorResponseDto{Error: err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, Dtos.GenericResponseDto{Data: products})
 }
 
@@ -31,13 +43,14 @@ func GetProducts(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param   id     path    int     true  "Product Id"
-// @Success      200  {object} models.Product
+// @Success      200  {object} Dtos.GenericResponseDto
+// @Failure      400  {object} Dtos.ErrorResponseDto
 // @Router       /products/{id} [get]
-func GetProduct(c *gin.Context) {
-	id := c.Param("id")
-	var product models.Product
-	if err := config.DB.First(&product, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, Dtos.ErrorResponseDto{Error: "product not found"})
+func (pc *ProductController) GetProduct(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	product, err := pc.service.GetProduct(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, Dtos.ErrorResponseDto{Error: err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, Dtos.GenericResponseDto{Data: product})
@@ -50,15 +63,20 @@ func GetProduct(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        product body models.Product true "Add product"
-// @Success      200  {object} models.Product
+// @Success      200  {object} Dtos.GenericResponseDto
+// @Failure      400  {object} Dtos.ErrorResponseDto
 // @Router       /products [post]
-func CreateProduct(c *gin.Context) {
-	var product models.Product
-	if err := c.ShouldBindJSON(&product); err != nil {
+func (pc *ProductController) CreateProduct(c *gin.Context) {
+	var input models.Product
+	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, Dtos.ErrorResponseDto{Error: err.Error()})
 		return
 	}
-	config.DB.Create(&product)
+	product, err := pc.service.CreateProduct(input)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, Dtos.ErrorResponseDto{Error: err.Error()})
+		return
+	}
 	c.JSON(http.StatusCreated, Dtos.GenericResponseDto{Data: product})
 }
 
@@ -70,28 +88,25 @@ func CreateProduct(c *gin.Context) {
 // @Produce      json
 // @Param        id   path      int  true  "Product Id"
 // @Param        product body models.Product true "Update product"
-// @Success      200  {object} models.Product
+// @Success      200 {object} Dtos.GenericResponseDto
+// @Failure      400 {object} Dtos.ErrorResponseDto
 // @Router       /products/{id} [put]
-func UpdateProduct(c *gin.Context) {
-	id := c.Param("id")
-	number64, err := strconv.ParseInt(id, 10, 64) // base 10, 64-bit
+func (pc *ProductController) UpdateProduct(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, Dtos.ErrorResponseDto{Error: "Invalid Product Id"})
 		return
 	}
 	var product models.Product
-	if err := config.DB.First(&product, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, Dtos.ErrorResponseDto{Error: "Product not found"})
-		return
-	}
 	if err := c.ShouldBindJSON(&product); err != nil {
 		c.JSON(http.StatusBadRequest, Dtos.ErrorResponseDto{Error: err.Error()})
 		return
 	}
-
-	product.Id = int(number64)
-	config.DB.Save(&product)
-	c.JSON(http.StatusOK, Dtos.GenericResponseDto{Data: product})
+	result, err1 := pc.service.UpdateProduct(id, product)
+	if err1 != nil {
+		c.JSON(http.StatusInternalServerError, Dtos.ErrorResponseDto{Error: err1.Error()})
+	}
+	c.JSON(http.StatusOK, Dtos.GenericResponseDto{Data: result})
 }
 
 // DeleteProduct godoc
@@ -104,9 +119,10 @@ func UpdateProduct(c *gin.Context) {
 // @Success      200  {object}  Dtos.GenericResponseDto
 // @Failure      400  {object}  Dtos.ErrorResponseDto
 // @Router       /products/{id} [delete]
-func DeleteProduct(c *gin.Context) {
-	id := c.Param("id")
-	if err := config.DB.Delete(&models.Product{}, id).Error; err != nil {
+func (pc *ProductController) DeleteProduct(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	err := pc.service.DeleteProduct(id)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, Dtos.ErrorResponseDto{Error: "Delete failed"})
 		return
 	}

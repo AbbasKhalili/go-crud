@@ -8,20 +8,18 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-crud/config"
-	_ "go-crud/docs"
-	"go-crud/models"
-	"go-crud/routes"
-
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"go-crud/config"
+	_ "go-crud/docs"
+	"go-crud/routes"
 )
 
 func main() {
+
 	r := gin.Default()
 	config.ConnectDatabase()
-	config.DB.AutoMigrate(&models.Product{})
-
+	
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	routes.ProductRoute(r)
 
